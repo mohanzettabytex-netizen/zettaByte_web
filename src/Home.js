@@ -1021,13 +1021,13 @@ export default function Home() {
                                 className="w-full px-4 py-3 border rounded-xl"
                             />
 
-                            <input
+                            {/* <input
                                 type="file"
                                 name="resume"
                                 accept=".pdf,.doc,.docx"
                                 required
                                 className="w-full mt-2 px-4 py-2 border rounded-xl"
-                            />
+                            /> */}
 
                             <button
                                 type="submit"
