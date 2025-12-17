@@ -4,6 +4,10 @@ import {
     Users, Target, Award, Mail, Phone, MapPin, Github, Linkedin, Twitter,
     Send, CheckCircle, TrendingUp, Layers, Rocket
 } from 'lucide-react';
+import { motion, useAnimationControls } from "framer-motion";
+import Counter from './Counter';
+
+
 
 export default function Home() {
     const [scrollY, setScrollY] = useState(0);
@@ -65,28 +69,28 @@ export default function Home() {
     }, []);
 
     /* -------------------- COUNTER COMPONENT -------------------- */
-    function Counter({ value, startAnimation }) {
-        const [count, setCount] = useState(0);
+    // function Counter({ value, startAnimation }) {
+    //     const controls = useAnimationControls();
+    //     const end = parseInt(value.replace("+", ""));
 
-        useEffect(() => {
-            if (!startAnimation) return;
+    //     useEffect(() => {
+    //         if (startAnimation) {
+    //             controls.start({
+    //                 count: end,
+    //                 transition: { duration: 2, ease: "easeOut" }
+    //             });
+    //         }
+    //     }, [startAnimation]);
 
-            let start = 0;
-            const end = parseInt(value.replace("+", ""));
-            const duration = 2000;
-            const incrementTime = duration / end;
-
-            const timer = setInterval(() => {
-                start += 1;
-                setCount(start);
-                if (start === end) clearInterval(timer);
-            }, incrementTime);
-
-            return () => clearInterval(timer);
-        }, [startAnimation]);
-
-        return <span>{count}+</span>;
-    }
+    //     return (
+    //         <motion.span
+    //             animate={controls}
+    //             initial={{ count: 0 }}
+    //         >
+    //             {Math.floor(controls.get().count)}+
+    //         </motion.span>
+    //     );
+    // }
 
     /* -------------------- DATA ARRAYS -------------------- */
     const services = [
@@ -127,15 +131,15 @@ export default function Home() {
     const scrollToSection = (id) =>
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-    /* ================================================================= */
-    /* =========================== RENDER =============================== */
-    /* ================================================================= */
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-800 overflow-hidden"> 
+        <div className="min-h-screen bg-gray-50 text-gray-800 overflow-hidden">
+            
             {/* -------------------- NAVBAR -------------------- */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+                    
 
                     {/* Logo */}
                     <div
@@ -144,7 +148,7 @@ export default function Home() {
                     >
                         <Sparkles className="w-7 h-7 text-blue-600" />
                         <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-                            ZettaBytwX
+                            ZettaByteX
                         </span>
                     </div>
 
@@ -164,100 +168,151 @@ export default function Home() {
                         ))}
                     </div>
 
-                    <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
+                    {/* <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
                         Get Started
-                    </button>
+                    </button> */}
                 </div>
             </nav>
 
 
-            {/* -------------------- HERO SECTION -------------------- */}
-            <section id="home" className="relative min-h-screen flex items-center pt-28 bg-white">
-                <div className="max-w-7xl mx-auto px-6   w-full grid lg:grid-cols-2 gap-12 items-center">
+            <section id="home" className="relative min-h-screen flex items-center pt-28 bg-white overflow-hidden">
 
-                    {/* LEFT SIDE */}
-                    <div className="space-y-8">
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-white to-purple-100 opacity-70 pointer-events-none" />
 
-                        <div className="inline-flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                <div className="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-14 items-center relative z-10">
+
+                    {/* LEFT CONTENT */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="space-y-8"
+                    >
+                        {/* Badge */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="inline-flex items-center space-x-2 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-blue-200 shadow-sm"
+                        >
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            <span className="text-sm font-medium text-blue-600">
-                                Leading IT Innovation Since 2014
+                            <span className="text-sm font-medium text-blue-600">Innovating Since 2024</span>
+                        </motion.div>
+
+                        {/* Heading */}
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-6xl lg:text-7xl font-extrabold leading-tight text-gray-900"
+                        >
+                            Build the
+                            <span className="block bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                                Future with Us
                             </span>
-                        </div>
+                        </motion.h1>
 
-                        <h1 className="text-6xl lg:text-7xl font-bold leading-tight text-gray-900">
-                            Transform
-                            <span className="block bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-                                The Future
-                            </span>
-                        </h1>
+                        {/* Sub Text */}
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-xl text-gray-600 max-w-xl"
+                        >
+                            Crafting powerful, scalable, and intelligent digital solutions for modern businesses.
+                        </motion.p>
 
-                        <p className="text-xl text-gray-600 max-w-xl">
-                            We engineer modern, scalable digital solutions for businesses.
-                        </p>
-
-                        <div className="flex flex-wrap gap-4">
+                        {/* Buttons */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="flex flex-wrap gap-4"
+                        >
                             <button
                                 onClick={() => scrollToSection('projects')}
-                                className="px-8 py-4 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition font-semibold"
+                                className="px-8 py-4 bg-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 
+                    transition-all font-semibold"
                             >
-                                View Projects
+                                Explore Projects
                             </button>
 
                             <button
                                 onClick={() => scrollToSection('contact')}
-                                className="px-8 py-4 rounded-xl border border-gray-300 hover:bg-gray-100 transition font-semibold"
+                                className="px-8 py-4 rounded-xl border border-gray-300 hover:bg-gray-100 transition-all font-semibold"
                             >
                                 Contact Us
                             </button>
-                        </div>
+                        </motion.div>
 
-                        {/* ----------- MAIN COUNTERS ----------- */}
-                        <div id="stats-section" className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8">
+                        {/* Animated Stats */}
+                        <motion.div
+                            id="stats-section"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-10"
+                        >
                             {stats.map((stat, i) => {
                                 const Icon = stat.icon;
                                 return (
-                                    <div
+                                    <motion.div
                                         key={i}
-                                        className="text-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:scale-105 transition"
+                                        whileHover={{ scale: 1.08 }}
+                                        className="text-center bg-white p-5 rounded-2xl border border-gray-200 shadow-sm cursor-pointer transition"
                                     >
-                                        <Icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                                        <Icon className="w-7 h-7 text-blue-600 mx-auto mb-3" />
 
-                                        <div className="text-2xl font-bold text-gray-900">
+                                        <div className="text-3xl font-extrabold text-gray-900">
                                             <Counter value={stat.number} startAnimation={statsStart} />
                                         </div>
 
                                         <div className="text-sm text-gray-500">{stat.label}</div>
-                                    </div>
+                                    </motion.div>
                                 );
                             })}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
-                    {/* RIGHT SIDE - SERVICES */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {services.map((service, index) => {
-                            const Icon = service.icon;
-                            const isActive = index === activeService;
+                    {/* RIGHT CONTENT – Animated Floating Cards */}
+                    <div className="relative flex justify-center items-center">
 
-                            return (
-                                <div
-                                    key={index}
-                                    onMouseEnter={() => setActiveService(index)}
-                                    className={`p-8 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md 
-                                        transition transform ${isActive ? 'scale-105' : ''}`}
-                                >
-                                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4`}>
-                                        <Icon className="w-7 h-7 text-gray-700" />
-                                    </div>
-                                    <h3 className="text-lg font-bold">{service.title}</h3>
-                                    <p className="text-gray-600 text-sm mt-1">{service.desc}</p>
-                                </div>
-                            );
-                        })}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3, type: "spring" }}
+                            className="relative w-full grid grid-cols-2 gap-5"
+                        >
+                            {services.map((service, index) => {
+                                const Icon = service.icon;
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        whileHover={{ scale: 1.06, rotate: 1 }}
+                                        className="p-8 rounded-2xl border border-gray-200 bg-white shadow-md cursor-pointer transition-all"
+                                    >
+                                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4`}>
+                                            <Icon className="w-7 h-7 text-gray-800" />
+                                        </div>
+                                        <h3 className="text-lg font-bold">{service.title}</h3>
+                                        <p className="text-gray-600 text-sm mt-1">{service.desc}</p>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+
+                        {/* Floating glow */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            transition={{ delay: 1 }}
+                            className="absolute -bottom-10 w-72 h-72 bg-blue-300 blur-3xl opacity-30 rounded-full"
+                        />
                     </div>
                 </div>
             </section>
+
 
 
 
@@ -449,12 +504,11 @@ export default function Home() {
 
                     <div className="grid lg:grid-cols-2 gap-12">
 
-                        {/* CONTACT INFORMATION */}
                         <div className="space-y-8">
                             {[
-                                { icon: Mail, title: 'Email Us', info: 'hello@zettabytex.com', link: 'mailto:hello@zettabytex.com' },
-                                { icon: Phone, title: 'Call Us', info: '+1 (555) 123-4567', link: 'tel:+15551234567' },
-                                { icon: MapPin, title: 'Visit Us', info: 'San Francisco, CA 94102', link: '#' }
+                                { icon: Mail, title: 'Email Us', info: 'info@zettabytex.in', link: 'mailto:info@zettabytex.in' },
+                                { icon: Phone, title: 'Call Us', info: '+91 9500250290', link: '+91 9500250290' },
+                                { icon: MapPin, title: 'Visit Us', info: '3/155 Eripalayam, Udumalpet, Tamil Nadu, 642-126', link: '#' }
                             ].map((item, i) => {
                                 const Icon = item.icon;
                                 return (
