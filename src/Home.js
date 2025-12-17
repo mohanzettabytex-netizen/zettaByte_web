@@ -1,20 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Code, Smartphone, Monitor, FileText, ArrowRight, Sparkles, Zap,
-    Users, Target, Award, Mail, Phone, MapPin, Github, Linkedin, Twitter,
-    Send, CheckCircle, TrendingUp, Layers, Rocket
-} from 'lucide-react';
-import { motion, useAnimationControls } from "framer-motion";
+    Code,
+    Smartphone,
+    Monitor,
+    FileText,
+    ArrowRight,
+    Sparkles,
+    Zap,
+    Users,
+    Target,
+    Award,
+    Mail,
+    Phone,
+    MapPin,
+    Github,
+    Linkedin,
+    Twitter,
+    Send,
+    CheckCircle,
+    TrendingUp,
+    Layers,
+    Rocket,
+    Menu,
+    X
+} from "lucide-react";
+import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
 import Counter from './Counter';
+import emailjs from "emailjs-com";
+
+
+
 
 
 
 export default function Home() {
     const [scrollY, setScrollY] = useState(0);
     const [activeService, setActiveService] = useState(0);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [statsStart, setStatsStart] = useState(false); // counting start flag
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [careerSuccess, setCareerSuccess] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+
+
+
+
+
 
     /* -------------------- ACTIVE SECTION SCROLL -------------------- */
     useEffect(() => {
@@ -44,8 +79,9 @@ export default function Home() {
         }, 3000);
         return () => clearInterval(interval);
     }, []);
+
     useEffect(() => {
-        document.title = "Zettabytex - Software & App Development";
+        document.title = "ZettaByteX | Modern Digital Solutions";
     }, []);
 
 
@@ -68,29 +104,114 @@ export default function Home() {
         return () => observer.disconnect();
     }, []);
 
-    /* -------------------- COUNTER COMPONENT -------------------- */
-    // function Counter({ value, startAnimation }) {
-    //     const controls = useAnimationControls();
-    //     const end = parseInt(value.replace("+", ""));
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    //     useEffect(() => {
-    //         if (startAnimation) {
-    //             controls.start({
-    //                 count: end,
-    //                 transition: { duration: 2, ease: "easeOut" }
-    //             });
-    //         }
-    //     }, [startAnimation]);
+        if (isSending) return;
 
-    //     return (
-    //         <motion.span
-    //             animate={controls}
-    //             initial={{ count: 0 }}
-    //         >
-    //             {Math.floor(controls.get().count)}+
-    //         </motion.span>
-    //     );
-    // }
+        setIsSending(true);
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const res = await fetch("https://formspree.io/f/xblnnbod", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                },
+            });
+
+            if (res.ok) {
+                setShowSuccess(true);
+                form.reset();
+
+                // Hide popup after 3 seconds
+                setTimeout(() => {
+                    setShowSuccess(false);
+                }, 3000);
+            } else {
+                console.error("Formspree error:", await res.json());
+                alert("Failed to send message. Please try again.");
+            }
+        } catch (err) {
+            console.error("Form submission error:", err);
+            alert("Network error. Please try again.");
+        } finally {
+            // ✅ VERY IMPORTANT
+            setIsSending(false);
+        }
+    };
+
+
+    const handleCareerSubmit = async (e) => {
+        e.preventDefault();
+
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const res = await fetch("https://formspree.io/f/myzrrqeg", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                },
+            });
+
+            const data = await res.json(); // important for debugging
+
+            if (res.ok) {
+                form.reset();
+
+                // CLOSE CAREER POPUP
+                setSelectedJob(null);
+
+                // SHOW SUCCESS POPUP
+                setCareerSuccess(true);
+
+                setTimeout(() => {
+                    setCareerSuccess(false);
+                }, 3000);
+            } else {
+                console.error("Formspree error:", data);
+                alert("Application submission failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Career submit error:", error);
+            alert("Network error. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const jobs = [
+        {
+            title: "Frontend Developer",
+            desc: "Build modern, responsive web interfaces using React and Tailwind.",
+            tags: ["React", "Tailwind", "UI", "2+ Years"]
+        },
+        {
+            title: "Backend Developer",
+            desc: "Develop secure APIs and scalable backend systems.",
+            tags: ["Node.js / .NET", "API", "SQL", "2+ Years"]
+        },
+        {
+            title: "UI/UX Designer",
+            desc: "Design intuitive user experiences and modern interfaces.",
+            tags: ["Figma", "UX", "Design System"]
+        },
+        {
+            title: "Software Intern",
+            desc: "Learn real-world development by working on live projects.",
+            tags: ["Internship", "React", "Learning"]
+        }
+    ];
 
     /* -------------------- DATA ARRAYS -------------------- */
     const services = [
@@ -122,10 +243,10 @@ export default function Home() {
     ];
 
     const stats = [
-        { icon: Rocket, number: '500+', label: 'Projects Delivered' },
-        { icon: Users, number: '150+', label: 'Happy Clients' },
-        { icon: Award, number: '25+', label: 'Awards Won' },
-        { icon: TrendingUp, number: '99%', label: 'Success Rate' }
+        { icon: Rocket, number: '25+', label: 'Projects Delivered' },
+        { icon: Users, number: '40+', label: 'Happy Clients' },
+        { icon: Award, number: '10+', label: 'Awards Won' },
+        { icon: TrendingUp, number: '98%', label: 'Success Rate' }
     ];
 
     const scrollToSection = (id) =>
@@ -133,13 +254,36 @@ export default function Home() {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-800 overflow-hidden">
-            
-            {/* -------------------- NAVBAR -------------------- */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="relative min-h-screen text-gray-800 overflow-hidden">
 
-                    
+            {/* GLOBAL BACKGROUND */}
+            <motion.div
+                aria-hidden
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.2 }}
+                className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50"
+            />
+
+            {/* SUBTLE ANIMATED BLOBS */}
+            <motion.div
+                animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                className="fixed top-[-120px] left-[-120px] w-[420px] h-[420px] bg-blue-300/20 blur-3xl rounded-full -z-10"
+            />
+
+            <motion.div
+                animate={{ x: [0, -30, 0], y: [0, 40, 0] }}
+                transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+                className="fixed bottom-[-120px] right-[-120px] w-[420px] h-[420px] bg-indigo-300/20 blur-3xl rounded-full -z-10"
+            />
+
+            {/* CONTENT STARTS HERE */}
+
+
+            {/* -------------------- NAVBAR -------------------- */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
                     {/* Logo */}
                     <div
@@ -152,15 +296,15 @@ export default function Home() {
                         </span>
                     </div>
 
-                    {/* Navigation Items */}
-                    <div className="hidden md:flex items-center space-x-4">
-                        {['home', 'about', 'projects', 'contact'].map(item => (
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center space-x-6">
+                        {['home', 'about', 'projects', 'careers', 'contact'].map(item => (
                             <button
                                 key={item}
                                 onClick={() => scrollToSection(item)}
-                                className={`px-4 py-2 rounded-lg capitalize font-medium transition ${activeSection === item
-                                    ? 'text-blue-600 bg-blue-100'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                className={`capitalize font-medium transition ${activeSection === item
+                                    ? 'text-blue-600'
+                                    : 'text-gray-600 hover:text-blue-600'
                                     }`}
                             >
                                 {item}
@@ -168,11 +312,16 @@ export default function Home() {
                         ))}
                     </div>
 
-                    {/* <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
-                        Get Started
-                    </button> */}
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+                        onClick={() => setMobileMenuOpen(true)}
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
                 </div>
             </nav>
+
 
 
             <section id="home" className="relative min-h-screen flex items-center pt-28 bg-white overflow-hidden">
@@ -312,14 +461,20 @@ export default function Home() {
                     </div>
                 </div>
             </section>
-
-
-
-
-
             {/* -------------------- ABOUT SECTION -------------------- */}
-            <section id="about" className="py-32 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-6">
+            <section
+                id="about"
+                className="relative py-10 overflow-hidden"
+            >
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50 pointer-events-none" />
+
+                {/* Soft glow accents */}
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-300/20 blur-3xl rounded-full pointer-events-none" />
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-300/20 blur-3xl rounded-full pointer-events-none" />
+
+                {/* CONTENT WRAPPER (IMPORTANT) */}
+                <div className="relative max-w-7xl mx-auto px-6">
 
                     {/* HEADER */}
                     <div className="text-center mb-16">
@@ -345,17 +500,20 @@ export default function Home() {
                         ].map((item, i) => {
                             const Icon = item.icon;
                             return (
-                                <div key={i} className="bg-white border border-gray-200 shadow-sm rounded-3xl p-8 text-center">
+                                <div
+                                    key={i}
+                                    className="bg-white/90 backdrop-blur border border-gray-200 shadow-sm rounded-3xl p-8 text-center"
+                                >
                                     <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
                                         <Icon className="w-8 h-8 text-gray-700" />
                                     </div>
+
                                     <h3 className="text-2xl font-bold text-gray-900">{item.title}</h3>
                                     <p className="mt-3 text-gray-600">{item.desc}</p>
                                 </div>
                             );
                         })}
                     </div>
-
 
                     {/* WHY CHOOSE US */}
                     <div className="mt-20 grid lg:grid-cols-2 gap-12 items-center">
@@ -382,18 +540,17 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Small counters block (Now Fixed) */}
+                        {/* STATS */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8">
                             {stats.map((stat, i) => {
                                 const Icon = stat.icon;
                                 return (
                                     <div
                                         key={i}
-                                        className="text-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:scale-105 transition"
+                                        className="text-center bg-white/90 backdrop-blur p-4 rounded-xl border border-gray-200 shadow-sm hover:scale-105 transition"
                                     >
                                         <Icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
 
-                                        {/* FIX: startAnimation added */}
                                         <div className="text-2xl font-bold text-gray-900">
                                             <Counter value={stat.number} startAnimation={statsStart} />
                                         </div>
@@ -403,86 +560,169 @@ export default function Home() {
                                 );
                             })}
                         </div>
-
                     </div>
+
                 </div>
             </section>
 
+            <section id="careers" className="relative py-28 overflow-hidden">
 
+                {/* Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-blue-50 pointer-events-none" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-300/20 blur-3xl rounded-full pointer-events-none" />
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-300/20 blur-3xl rounded-full pointer-events-none" />
 
+                <div className="relative max-w-7xl mx-auto px-6">
 
-
-
-            {/* -------------------- PROJECTS SECTION -------------------- */}
-            <section id="projects" className="py-32 bg-white">
-                <div className="max-w-7xl mx-auto px-6">
-
+                    {/* Header */}
                     <div className="text-center mb-16">
-                        <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full border border-blue-100 text-sm">
-                            Our Work
+                        <span className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 text-sm">
+                            Careers
                         </span>
 
-                        <h2 className="text-5xl font-bold mt-6 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-                            Featured Projects
+                        <h2 className="text-5xl font-bold mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                            Join Our Team
                         </h2>
 
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
-                            Explore our portfolio of transformative solutions.
+                            Work with passionate people building impactful digital products.
                         </p>
                     </div>
 
+                    {/* Job Cards */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {jobs.map((job, i) => (
+                            <div
+                                key={i}
+                                className="bg-white/90 backdrop-blur border border-gray-200 rounded-3xl p-8 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
+                            >
+                                <h3 className="text-2xl font-bold text-gray-900">{job.title}</h3>
+
+                                <p className="text-gray-600 mt-3">{job.desc}</p>
+
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {job.tags.map((tag, j) => (
+                                        <span
+                                            key={j}
+                                            className="text-xs px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={() => setSelectedJob(job.title)}
+                                    className="mt-6 w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+                                >
+                                    Apply Now
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
+            </section>
+
+            {/* -------------------- PROJECTS SECTION -------------------- */}
+            <section id="projects" className="relative py-16 overflow-hidden">
+
+                {/* Background decoration */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50 pointer-events-none" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-300/30 blur-3xl rounded-full" />
+
+                <div className="relative max-w-7xl mx-auto px-6">
+
+                    {/* Header */}
+                    <div className="text-center mb-20">
+                        <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/70 backdrop-blur border border-blue-200 text-blue-700 text-sm font-medium shadow-sm">
+                            🚀 Our Work
+                        </span>
+
+                        <h2 className="mt-6 text-5xl lg:text-6xl font-extrabold leading-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            Real-World Digital Products
+                        </h2>
+
+                        <p className="mt-5 text-xl text-gray-600 max-w-3xl mx-auto">
+                            We design and build scalable platforms used by schools, startups, and growing businesses.
+                        </p>
+                    </div>
 
                     {/* Projects Grid */}
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+
                         {projects.map((project, i) => (
                             <div
                                 key={i}
-                                className="group bg-white border border-gray-200 shadow-sm rounded-3xl overflow-hidden hover:shadow-lg transition cursor-pointer"
+                                className="group relative rounded-3xl overflow-hidden bg-white/80 backdrop-blur border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500"
                             >
-                                <img
-                                    src={project.image}
-                                    alt={project.title}
-                                    className="w-full h-48 object-cover"
-                                />
 
-                                <div className="p-6">
-                                    <div className="text-sm text-blue-600 font-medium mb-2">{project.category}</div>
+                                {/* Image */}
+                                <div className="relative h-56 overflow-hidden">
+                                    <img
+                                        src={project.image}
+                                        alt={project.title}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
+                                    />
 
-                                    <h3 className="text-2xl font-bold">{project.title}</h3>
+                                    {/* Image overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
 
-                                    <div className="flex flex-wrap gap-2 mt-3">
+                                    {/* Category badge */}
+                                    <span className="absolute top-4 left-4 px-4 py-1 rounded-full bg-white/90 text-sm font-semibold text-gray-800 shadow">
+                                        {project.category}
+                                    </span>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-7 space-y-4">
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        {project.title}
+                                    </h3>
+
+                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                        {project.description}
+                                    </p>
+
+                                    {/* Tech stack */}
+                                    <div className="flex flex-wrap gap-2">
                                         {project.tech.map((tech, j) => (
                                             <span
                                                 key={j}
-                                                className="text-xs px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-700"
+                                                className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-medium"
                                             >
                                                 {tech}
                                             </span>
                                         ))}
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="pt-4 flex items-center justify-between">
+                                        <span className="text-sm text-gray-500">
+                                            Used by {project.users}+ users
+                                        </span>
+
+                                        <button className="text-blue-600 font-semibold hover:underline">
+                                            View Case Study →
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-
-                    <div className="text-center mt-16">
+                    {/* CTA */}
+                    <div className="text-center mt-24">
                         <button
                             onClick={() => scrollToSection('contact')}
-                            className="px-8 py-4 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition font-semibold"
+                            className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-2xl font-semibold shadow-xl hover:bg-blue-700 hover:-translate-y-1 transition-all"
                         >
-                            View All Projects
+                            Start Your Project
                         </button>
                     </div>
 
                 </div>
             </section>
-
-
-
-
-
-
             {/* -------------------- CONTACT SECTION -------------------- */}
             <section id="contact" className="py-32 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-6">
@@ -549,16 +789,20 @@ export default function Home() {
 
                         {/* CONTACT FORM */}
                         <form
+                            onSubmit={handleSubmit}
                             className="bg-white border border-gray-200 shadow-md rounded-3xl p-8 space-y-6"
-                            onSubmit={(e) => e.preventDefault()}
                         >
+
+                            <input type="hidden" name="_subject" value="New Website Enquiry" />
+                            <input type="hidden" name="_captcha" value="false" />
+
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Your Name</label>
                                 <input
                                     type="text"
-                                    className="w-full mt-2 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-300"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    name="name"
+                                    required
+                                    className="w-full mt-2 px-4 py-3 border rounded-xl"
                                 />
                             </div>
 
@@ -566,32 +810,266 @@ export default function Home() {
                                 <label className="text-sm font-medium text-gray-700">Email</label>
                                 <input
                                     type="email"
-                                    className="w-full mt-2 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-300"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    name="email"
+                                    required
+                                    className="w-full mt-2 px-4 py-3 border rounded-xl"
                                 />
                             </div>
 
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Message</label>
                                 <textarea
+                                    name="message"
                                     rows={4}
-                                    className="w-full mt-2 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-300"
-                                    value={formData.message}
-                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                    required
+                                    className="w-full mt-2 px-4 py-3 border rounded-xl"
                                 />
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full py-4 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition font-semibold"
+                                className="w-full py-4 bg-blue-600 text-white rounded-xl font-semibold"
                             >
                                 Send Message
                             </button>
                         </form>
+
                     </div>
                 </div>
             </section>
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm"
+                        />
+
+                        {/* LEFT Drawer */}
+                        <motion.div
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                            className="fixed left-0 top-0 z-[70] h-full w-[85%] max-w-sm bg-white shadow-2xl flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-5 border-b">
+                                <div className="flex items-center space-x-2">
+                                    <Sparkles className="w-6 h-6 text-blue-600" />
+                                    <span className="text-xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+                                        ZettaByteX
+                                    </span>
+                                </div>
+
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-lg hover:bg-gray-100"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            {/* BODY (Blank-page feel) */}
+                            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
+
+                                {/* Brand Info */}
+                                <div>
+                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                        We build modern, scalable digital products for businesses,
+                                        schools, and startups using cutting-edge technology.
+                                    </p>
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="space-y-2">
+                                    {['home', 'about', 'projects', 'careers', 'contact'].map((item, i) => (
+                                        <motion.button
+                                            key={item}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.07 }}
+                                            onClick={() => {
+                                                scrollToSection(item);
+                                                setMobileMenuOpen(false);
+                                            }}
+                                            className="w-full text-left px-4 py-4 rounded-xl text-lg font-semibold capitalize
+                           text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                                        >
+                                            {item}
+                                        </motion.button>
+                                    ))}
+                                </div>
+
+                                {/* Extra Info (THIS makes it feel like a page) */}
+                                <div className="pt-4 border-t space-y-4">
+                                    <div className="flex items-center space-x-3 text-gray-700">
+                                        <Phone className="w-5 h-5 text-blue-600" />
+                                        <span>+91 9500250290</span>
+                                    </div>
+
+                                    <div className="flex items-center space-x-3 text-gray-700">
+                                        <Mail className="w-5 h-5 text-blue-600" />
+                                        <span>info@zettabytex.in</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer CTA */}
+                            <div className="p-6 border-t">
+                                <button
+                                    onClick={() => {
+                                        scrollToSection('contact');
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full py-4 bg-blue-600 text-white rounded-xl font-semibold shadow hover:bg-blue-700 transition"
+                                >
+                                    Get in Touch
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {showSuccess && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+                    {/* Popup */}
+                    <div className="relative bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-auto animate-scaleIn">
+                        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg
+                                className="w-7 h-7 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-900">Message Sent!</h3>
+                        <p className="text-gray-600 mt-2">
+                            Thank you for contacting us. We’ll get back to you shortly.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {selectedJob && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        onClick={() => !isSubmitting && setSelectedJob(null)}
+                    />
+
+                    <div className="relative bg-white rounded-3xl shadow-xl p-8 w-full max-w-md animate-scaleIn">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                            Apply for {selectedJob}
+                        </h3>
+
+                        {/* FORM HERE */}
+                    </div>
+                </div>
+            )}
+
+
+            {selectedJob && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        onClick={() => setSelectedJob(null)}
+                    />
+
+                    <div className="relative bg-white rounded-3xl shadow-xl p-8 w-full max-w-md animate-scaleIn">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                            Apply for {selectedJob}
+                        </h3>
+
+                        <form onSubmit={handleCareerSubmit} className="space-y-4 mt-4">
+                            <input type="hidden" name="_subject" value={`Career Application - ${selectedJob}`} />
+                            <input type="hidden" name="_captcha" value="false" />
+                            <input type="hidden" name="job" value={selectedJob} />
+
+                            <input
+                                required
+                                name="name"
+                                placeholder="Your Name"
+                                className="w-full px-4 py-3 border rounded-xl"
+                            />
+
+                            <input
+                                required
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                className="w-full px-4 py-3 border rounded-xl"
+                            />
+
+                            <textarea
+                                name="message"
+                                rows={3}
+                                placeholder="Why should we hire you?"
+                                className="w-full px-4 py-3 border rounded-xl"
+                            />
+
+                            <input
+                                type="file"
+                                name="resume"
+                                accept=".pdf,.doc,.docx"
+                                required
+                                className="w-full mt-2 px-4 py-2 border rounded-xl"
+                            />
+
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center
+      ${isSubmitting ? "bg-indigo-400" : "bg-indigo-600 text-white"}
+    `}
+                            >
+                                {isSubmitting ? "Submitting..." : "Submit Application"}
+                            </button>
+                        </form>
+
+
+                    </div>
+                </div>
+            )}
+
+            {careerSuccess && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+                    <div className="relative bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm animate-scaleIn">
+                        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg
+                                className="w-7 h-7 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-900">Application Submitted!</h3>
+                        <p className="text-gray-600 mt-2">
+                            We’ll review your profile and get back to you soon.
+                        </p>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
