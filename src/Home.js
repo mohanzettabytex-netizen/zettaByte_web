@@ -27,6 +27,8 @@ import {
 import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
 import Counter from './Counter';
 import emailjs from "emailjs-com";
+import zbxLogo from "./asset/zbx_logo-3.png";
+
 
 
 
@@ -290,11 +292,18 @@ export default function Home() {
                         onClick={() => scrollToSection('home')}
                         className="flex items-center space-x-2 cursor-pointer"
                     >
-                        <Sparkles className="w-7 h-7 text-blue-600" />
+                        {/* Logo Image */}
+                        <img
+                            src={zbxLogo}
+                            alt="ZettaByteX Logo"
+                            className="w-12 h-12 object-contain"
+                        />
+                        {/* Brand Name */}
                         <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
                             ZettaByteX
                         </span>
                     </div>
+
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-6">
